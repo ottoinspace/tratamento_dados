@@ -48,4 +48,33 @@ df_dropna = df.dropna()  # Remove valores nulos
 ```
 df = df.dropna(subset=['cpf'])  # Remover registro com CPF nulo
 ```
+ ## outliers
+Outliers são valores que se encontram significativamente abaixo ou acima da maioria dos dados em um conjunto. Eles podem distorcer análises estatísticas e, por isso, é importante identificá-los e, se necessário, removê-los. Abaixo, são apresentados dois métodos comuns para identificar e filtrar outliers: Z-score e IQR (Interquartile Range).
+### Z-score
+O Z-score mede a distância de um valor em relação à média, em termos de desvios padrão. Ele é útil para identificar outliers em distribuições aproximadamente normais.
+#### Identificar outliers com Z-score:
+```
+z_scores = stats.zscore(df['idade'].dropna())
+outliers_z = df[z_scores >= 3]
+```
+#### Filtrar outliers com Z-score
+```
+df_score = df[(stats.zscore(df['idade']) < 3)]
+```
+### IQR
+O IQR é a diferença entre o terceiro quartil (Q3) e o primeiro quartil (Q1) e captura a dispersão central de 50% dos dados. Valores que estejam 1,5 vezes o IQR abaixo do Q1 ou acima do Q3 são considerados outliers.
+#### Identificar outliers com IQR
+```
+Q1 = df['idade'].quantile(0.25)
+Q3 = df['idade'].quantile(0.75)
+IQR = Q1 - Q3
 
+limite_baixo = Q1 - 1.5 * IQR
+limite_alto = Q3 + 1.5 * IQR
+
+outliers_iqr = df[(df['idade'] < limite_baixo) | (df['idade'] > limite_alto)]
+```
+#### Filtrar outliers em IQR
+```
+df_iqr = df[(df['idade'] >= limite_baixo) & (df['idade'] <= limite_alto)]
+```
